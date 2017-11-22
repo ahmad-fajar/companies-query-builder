@@ -7,7 +7,8 @@ const {
   GraphQLList,
   GraphQLObjectType,
   GraphQLInputObjectType,
-  GraphQLSchema
+  GraphQLSchema,
+  GraphQLBoolean
 } = require('graphql')
 
 const Companies = require('./Companies')
@@ -34,10 +35,18 @@ const AcquisitionType = new GraphQLObjectType({
 })
 
 
+const AcquiredCompanyType = new GraphQLObjectType({
+  name: 'acquired_company',
+  fields: {
+    name: { type: GraphQLString }
+  }
+})
+
+
 const AcquisitionsType = new GraphQLObjectType({
   name: 'acquisitions',
   fields: {
-    acquiring_company: { type: new GraphQLList(AcquiringCompanyType) }
+    company: { type: new GraphQLList(AcquiredCompanyType) }
   }
 })
 
@@ -53,6 +62,22 @@ const FundingRoundsType = new GraphQLObjectType({
   }
 })
 
+const PersonType = new GraphQLObjectType({
+  name: 'person',
+  fields: {
+    first_name: { type: GraphQLString },
+    last_name: { type: GraphQLString }
+  }
+})
+
+const RelationshipsType = new GraphQLObjectType({
+  name: 'relationships',
+  fields: {
+    is_past: { type: GraphQLBoolean },
+    title: { type: GraphQLString },
+    person: { type: new GraphQLList(PersonType) }
+  }
+})
 
 const CompanyType = new GraphQLObjectType({
   name: 'company',
@@ -69,7 +94,6 @@ const CompanyType = new GraphQLObjectType({
     founded_year: { type: GraphQLInt },
     homepage_url: { type: GraphQLString },
     name: { type: GraphQLString },
-    name: { type: GraphQLString },
     number_of_employees: { type: GraphQLInt },
     overview: { type: GraphQLString },
     phone_number: { type: GraphQLString },
@@ -77,7 +101,8 @@ const CompanyType = new GraphQLObjectType({
     total_money_raised: { type: GraphQLString },
     acquisition: { type: new GraphQLList(AcquisitionType) },
     acquisitions: { type: new GraphQLList(AcquisitionsType) },
-    funding_rounds: { type: new GraphQLList(FundingRoundsType) }
+    funding_rounds: { type: new GraphQLList(FundingRoundsType) },
+    relationships: { type: new GraphQLList(RelationshipsType) }
   })
 })
 
@@ -95,9 +120,39 @@ const QueryType = new GraphQLObjectType({
           })
         })
       }
-    }
+    }, // end of companies
+
+    person_relation: {
+      type: new GraphQLList(CompanyType),
+      args: {
+        firstName: { type: GraphQLString },
+        lastName: { type: GraphQLString }
+      },
+      resolve: (root, { firstName, lastName }) => new Promise((res, rej) => {
+        let syntax = {
+          "relationships.person.first_name": firstName,
+          "relationships.person.last_name": lastName
+        }
+        Companies.find(syntax, (err, data) => {
+          if (!err) res(data)
+        })
+      })
+    }, // end of person_relation
+
+    company_association: {
+      type: new GraphQLList(CompanyType),
+      args: {
+        name: { type: GraphQLString }
+      },
+      resolve: (root, { name }) => new Promise((res, rej) => {
+        let syntax = { name: name }
+        Companies.find(syntax, (err, data) => {
+          if (!err) res(data)
+        })
+      })
+    } // end of company_association
   }
-})
+}) // end of QueryType
 
 
 const appSchema = new GraphQLSchema({

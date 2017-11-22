@@ -28,7 +28,7 @@ const companySchema = new Schema({
     }]
   }],
   acquisitions: [{
-    acquiring_company: [{
+    company: [{
       name: String
     }]
   }],
