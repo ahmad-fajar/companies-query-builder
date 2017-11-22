@@ -20,6 +20,7 @@ const AcquiringCompanyType = new GraphQLObjectType({
   }
 })
 
+
 const AcquisitionType = new GraphQLObjectType({
   name: 'acquisition',
   fields: {
@@ -29,6 +30,26 @@ const AcquisitionType = new GraphQLObjectType({
     // },
     // price_currency_code: {type: GraphQLString}
     acquiring_company: { type: new GraphQLList(AcquiringCompanyType) }
+  }
+})
+
+
+const AcquisitionsType = new GraphQLObjectType({
+  name: 'acquisitions',
+  fields: {
+    acquiring_company: { type: new GraphQLList(AcquiringCompanyType) }
+  }
+})
+
+
+const FundingRoundsType = new GraphQLObjectType({
+  name: 'funding_rounds',
+  fields: {
+    // raised_amount: { type: GraphQLInt }
+    raised_amount: {
+      type: GraphQLInt,
+      resolve: (funding_rounds) => parseInt(funding_rounds.raised_amount)
+    }
   }
 })
 
@@ -54,7 +75,9 @@ const CompanyType = new GraphQLObjectType({
     phone_number: { type: GraphQLString },
     tag_list: { type: GraphQLString },
     total_money_raised: { type: GraphQLString },
-    acquisition: { type: new GraphQLList(AcquisitionType) }
+    acquisition: { type: new GraphQLList(AcquisitionType) },
+    acquisitions: { type: new GraphQLList(AcquisitionsType) },
+    funding_rounds: { type: new GraphQLList(FundingRoundsType) }
   })
 })
 

@@ -26,6 +26,22 @@ const companySchema = new Schema({
     acquiring_company: [{
       name: String
     }]
+  }],
+  acquisitions: [{
+    acquiring_company: [{
+      name: String
+    }]
+  }],
+  funding_rounds: [{
+    raised_amount: Number
+  }],
+  relationships: [{
+    is_past: Boolean,
+    title: String,
+    person: [{
+      first_name: String,
+      last_name: String
+    }]
   }]
 })
 
