@@ -12,7 +12,10 @@ exports.getAllCompanies = () => {
 
 exports.getAcquired = (name) => {
   let query = {
-    name: name
+    name: {
+      $regex: name,
+      $options: 'i'
+    }
   }
   return Companies.findOne(query)
   .then(data => {
@@ -29,7 +32,10 @@ exports.getAcquired = (name) => {
 
 exports.getAcquiring = name => {
   let query = {
-    name: name
+    name: {
+      $regex: name,
+      $options: 'i'
+    }
   }
   return Companies.findOne(query)
   .then(data => {
@@ -38,9 +44,36 @@ exports.getAcquiring = name => {
 } // end of getAcquiring
 
 
+exports.getCompanies = args => {
+  const raised = args.min_raised
+  const rounds = args.min_rounds
+  const year = args.min_year
+
+  return Companies.aggregate([
+    {$project: {
+      name: "$name",
+      founded_year: "$founded_year",
+      funding_rounds: { $size: "$funding_rounds" },
+      raised_amount: { $sum: "$funding_rounds.raised_amount" },
+      rounds: "$funding_rounds"
+    }},
+    {$match: {
+      founded_year: {$gt: year},
+      funding_rounds: {$gt: rounds},
+      raised_amount: {$gt: raised}
+    }}
+  ])
+  .then(data => data)
+  .catch(e => console.log(e))
+} // end of getCompanies
+
+
 exports.getCompetitors = name => {
   let query = {
-    name: name
+    name: {
+      $regex: name,
+      $options: 'i'
+    }
   }
   return Companies.findOne(query)
   .then(data => {
@@ -57,9 +90,12 @@ exports.getCompetitors = name => {
 } // end of getCompetitors
 
 
-exports.getCompanyAssociations = name => {
+exports.getCompanyAssociations = (name) => {
   let query = {
-    name: name
+    name: {
+      $regex: name,
+      $options: 'i'
+    }
   }
   return Companies.findOne(query)
   .then(data => {
@@ -119,4 +155,3 @@ exports.getPersonRelation = (first_name, last_name) => {
   })
   .catch(e => console.log(e))
 } // end of getPersonRelation
-

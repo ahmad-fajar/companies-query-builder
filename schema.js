@@ -24,6 +24,7 @@ const {
   getPersonRelation
 } = require('./functions')
 
+
 const { AcquiredCompaniesFieldType } = require('./schema/acquired_company_field')
 const { CompaniesType } = require('./schema/companies')
 const { CompanyType } = require('./schema/all_companies')
