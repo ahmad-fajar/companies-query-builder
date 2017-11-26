@@ -21,7 +21,6 @@ const {
   getCompanies,
   getCompetitors,
   getCompanyAssociations,
-  getFindByTag,
   getPersonRelation
 } = require('./functions')
 
