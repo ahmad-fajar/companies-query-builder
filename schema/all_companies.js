@@ -24,11 +24,11 @@ const AcquiringCompanyType = new GraphQLObjectType({
 const AcquisitionType = new GraphQLObjectType({
   name: 'acquisition',
   fields: {
-    // price_amount: {
-    //   type: GraphQLString,
-    //   resolve: (acquisition) => Number(acquisition.price_amount)
-    // },
-    // price_currency_code: {type: GraphQLString}
+    price_amount: {
+      type: GraphQLString,
+      resolve: (acquisition) => Number(acquisition.price_amount)
+    },
+    price_currency_code: { type: GraphQLString },
     acquiring_company: { type: new GraphQLList(AcquiringCompanyType) }
   }
 })
@@ -53,13 +53,10 @@ const AcquisitionsType = new GraphQLObjectType({
 const FundingRoundsType = new GraphQLObjectType({
   name: 'funding_rounds',
   fields: {
-    // raised_amount: { type: GraphQLInt }
-    raised_amount: {
-      type: GraphQLInt,
-      resolve: (funding_rounds) => parseInt(funding_rounds.raised_amount)
-    }
+    raised_amount: { type: GraphQLInt }
   }
 })
+
 
 const PersonType = new GraphQLObjectType({
   name: 'person',
@@ -68,6 +65,7 @@ const PersonType = new GraphQLObjectType({
     last_name: { type: GraphQLString }
   }
 })
+
 
 const RelationshipsType = new GraphQLObjectType({
   name: 'relationships',
@@ -78,9 +76,10 @@ const RelationshipsType = new GraphQLObjectType({
   }
 })
 
+
 exports.CompanyType = new GraphQLObjectType({
-  name: 'company',
-  fields: () => ({
+  name: 'all_company',
+  fields: {
     _id: { type: new GraphQLNonNull(GraphQLID) },
     category_code: { type: GraphQLString },
     crunchbase_url: { type: GraphQLString },
@@ -102,5 +101,5 @@ exports.CompanyType = new GraphQLObjectType({
     acquisitions: { type: new GraphQLList(AcquisitionsType) },
     funding_rounds: { type: new GraphQLList(FundingRoundsType) },
     relationships: { type: new GraphQLList(RelationshipsType) }
-  })
+  }
 })

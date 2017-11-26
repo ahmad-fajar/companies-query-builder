@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const companySchema = new Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+  _id: Schema.Types.ObjectId,
   category_code: String,
   crunchbase_url: String,
   deadpooled_day: Number,
@@ -20,17 +20,22 @@ const companySchema = new Schema({
   phone_number: String,
   tag_list: String,
   total_money_raised: String,
-  acquisition: [{
+  acquisition: {
     price_amount: Number,
     price_currency_code: String,
-    acquiring_company: [{
+    acquiring_company: {
       name: String
-    }]
-  }],
+    }
+  },
   acquisitions: [{
-    company: [{
+    company: {
       name: String
-    }]
+    }
+  }],
+  competitions: [{
+    competitor: {
+      name: String
+    }
   }],
   funding_rounds: [{
     raised_amount: Number
