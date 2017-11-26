@@ -38,6 +38,25 @@ exports.getAcquiring = name => {
 } // end of getAcquiring
 
 
+exports.getCompetitors = name => {
+  let query = {
+    name: name
+  }
+  return Companies.findOne(query)
+  .then(data => {
+    let send = []
+    data.competitions.map(comp => {
+      send.push({
+        name: comp.competitor.name,
+        relationship: 'competitor'
+      })
+    })
+    return send
+  })
+  .catch(e => console.log(e))
+} // end of getCompetitors
+
+
 exports.getCompanyAssociations = name => {
   let query = {
     name: name
@@ -68,20 +87,36 @@ exports.getCompanyAssociations = name => {
   .catch(e => console.log(e))
 } // end of getCompanyAssociation
 
-exports.getCompetitors = name => {
+
+exports.getPersonRelation = (first_name, last_name) => {
   let query = {
-    name: name
+    'relationships.person.first_name': {
+      $regex: first_name,
+      $options: 'i'
+    },
+    'relationships.person.last_name': {
+      $regex: last_name,
+      $options: 'i'
+    }
   }
-  return Companies.findOne(query)
+  return Companies.find(query)
   .then(data => {
     let send = []
-    data.competitions.map(comp => {
-      send.push({
-        name: comp.competitor.name,
-        relationship: 'competitor'
+    data.map(a => {
+      a.relationships.map(b => {
+        let first = b.person[0].first_name.toLowerCase() === first_name.toLowerCase()
+        let last = b.person[0].last_name.toLowerCase() === last_name.toLowerCase()
+        if (first && last) {
+          send.push({
+            name: a.name,
+            title: b.title,
+            is_past: b.is_past
+          })
+        }
       })
     })
     return send
   })
   .catch(e => console.log(e))
-} // end of getCompetitors
+} // end of getPersonRelation
+
