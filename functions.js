@@ -106,9 +106,9 @@ exports.getCompanies = args => {
       rounds: "$funding_rounds"
     }},
     {$match: {
-      founded_year: {$gt: year},
-      funding_rounds: {$gt: rounds},
-      raised_amount: {$gt: raised}
+      founded_year: {$gte: year},
+      funding_rounds: {$gte: rounds},
+      raised_amount: {$gte: raised}
     }}
   ])
   .then(data => data)

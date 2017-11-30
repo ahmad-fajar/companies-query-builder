@@ -17,7 +17,8 @@ mongoose.connect(mongoURL, (e) => {
   else console.log(e)
 })
 
-app.get('/', (req, res) => res.send('Hello World'))
+// app.get('/', (req, res) => res.send('Hello World'))
+app.use('/', express.static(__dirname + '/out'))
 app.use('/graphiql', graphQLHTTP({
   schema: Schema,
   graphiql: true
