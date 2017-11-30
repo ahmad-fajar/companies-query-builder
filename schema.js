@@ -25,16 +25,16 @@ const {
 } = require('./functions')
 
 
-const { AcquiredCompaniesFieldType } = require('./schema/acquired_company_field')
-const { CompaniesType } = require('./schema/companies')
-const { CompanyType } = require('./schema/all_companies')
-const { PersonRelationsType } = require('./schema/person_relations')
+const { AcquiredCompaniesFieldType } = require('./schemas/acquired_company_field')
+const { CompaniesType } = require('./schemas/companies')
+const { CompanyType } = require('./schemas/all_companies')
+const { PersonRelationsType } = require('./schemas/person_relations')
 const {
   AcquiredType,
   AcquiringType,
   CompanyAssociationsType,
   CompetitorsType
-} = require('./schema/company_associations')
+} = require('./schemas/company_associations')
 
 
 const QueryType = new GraphQLObjectType({
