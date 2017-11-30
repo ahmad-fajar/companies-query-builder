@@ -148,10 +148,12 @@ exports.getCompanyAssociations = (name) => {
   return Companies.findOne(query)
   .then(data => {
     let send = []
-    send.push({
-      name: data.acquisition.acquiring_company.name,
-      relationship: 'acquiring company'
-    })
+    if (data.acquisition.acquiring_company.name) {
+      send.push({
+        name: data.acquisition.acquiring_company.name,
+        relationship: 'acquiring company'
+      })
+    }
     data.competitions.map(comp => {
       // console.log('comp>>>', comp.competitor.name)
       send.push({
@@ -167,6 +169,7 @@ exports.getCompanyAssociations = (name) => {
       })
     })
     return send
+    
   })
   .catch(e => console.log(e))
 } // end of getCompanyAssociation
