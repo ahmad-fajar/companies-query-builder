@@ -30,6 +30,54 @@ exports.getAcquired = (name) => {
 } // end of getAcquired
 
 
+exports.getAcquiredWField = (tag) => {
+  return Companies.aggregate()
+    .project({
+      _id: 1,
+      name: 1,
+      acquiring: { $gt: [{ $size: '$acquisitions' }, 0] },
+      acquired_companies: '$acquisitions.company.name'
+    })
+    .lookup({
+      from: 'companies',
+      localField: 'acquired_companies',
+      foreignField: 'name',
+      as: 'acquired'
+    })
+    .match({
+      acquiring: true,
+      acquired: { $ne: [] },
+      'acquired.tag_list': {
+        $regex: new RegExp(tag, 'i')
+      }
+    })
+    .project({
+      _id: '$_id',
+      name: '$name',
+      acquired_companies: '$acquired'
+    })
+    .then(data => {
+      let send = []
+      data.map(d => {
+        // console.log('processed')
+        // console.log(d)
+        let obj = { name: d.name, acquired_companies: [] }
+        d.acquired_companies.map(acq => {
+          if ((new RegExp(tag, 'i')).test(acq.tag_list)) {
+            obj.acquired_companies.push({
+              name: acq.name,
+              tag_list: acq.tag_list
+            })
+          }
+        })
+        send.push(obj)
+      })
+      return send
+    })
+    .catch(e => console.error(e))
+} // end of getAcquiredWField
+
+
 exports.getAcquiring = name => {
   let query = {
     name: {
@@ -58,9 +106,9 @@ exports.getCompanies = args => {
       rounds: "$funding_rounds"
     }},
     {$match: {
-      founded_year: {$gt: year},
-      funding_rounds: {$gt: rounds},
-      raised_amount: {$gt: raised}
+      founded_year: {$gte: year},
+      funding_rounds: {$gte: rounds},
+      raised_amount: {$gte: raised}
     }}
   ])
   .then(data => data)
@@ -100,10 +148,12 @@ exports.getCompanyAssociations = (name) => {
   return Companies.findOne(query)
   .then(data => {
     let send = []
-    send.push({
-      name: data.acquisition.acquiring_company.name,
-      relationship: 'acquiring company'
-    })
+    if (data.acquisition.acquiring_company.name) {
+      send.push({
+        name: data.acquisition.acquiring_company.name,
+        relationship: 'acquiring company'
+      })
+    }
     data.competitions.map(comp => {
       // console.log('comp>>>', comp.competitor.name)
       send.push({
@@ -119,6 +169,7 @@ exports.getCompanyAssociations = (name) => {
       })
     })
     return send
+    
   })
   .catch(e => console.log(e))
 } // end of getCompanyAssociation
